@@ -1,128 +1,200 @@
 import * as React from "react"
-import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import {
+  Container,
+  TextInput,
+  Button,
+  Box,
+  Paper,
+  Title,
+  Group,
+  Collapse,
+  Divider,
+  Text,
+  Loader,
+} from "@mantine/core"
+import { IconKey } from "@tabler/icons-react"
 
-import Layout from "../components/layout"
-import Seo from "../components/seo"
-import * as styles from "../components/index.module.css"
+const StorageKeys = {
+  API_URL: "apiUrl",
+  API_TOKEN: "apiToken",
+}
 
-const links = [
-  {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial",
-    description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
-  },
-  {
-    text: "Examples",
-    url: "https://github.com/gatsbyjs/gatsby/tree/master/examples",
-    description:
-      "A collection of websites ranging from very basic to complex/complete that illustrate how to accomplish specific tasks within your Gatsby sites.",
-  },
-  {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
-    description:
-      "Learn how to add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
-  },
-  {
-    text: "Build and Host",
-    url: "https://www.gatsbyjs.com/cloud",
-    description:
-      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
-  },
-]
+const IndexPage = () => {
+  const [input, setInput] = React.useState("")
+  const [response, setResponse] = React.useState(
+    "Ask something to check your LLM safety..."
+  )
+  const [collapseOpened, setCollapseOpened] = React.useState(false)
+  const [apiUrl, setApiUrl] = React.useState("")
+  const [apiToken, setApiToken] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [hasError, setHasError] = React.useState(false)
 
-const samplePageLinks = [
-  {
-    text: "Page 2",
-    url: "page-2",
-    badge: false,
-    description:
-      "A simple example of linking to another page within a Gatsby site",
-  },
-  { text: "TypeScript", url: "using-typescript" },
-  { text: "Server Side Rendering", url: "using-ssr" },
-  { text: "Deferred Static Generation", url: "using-dsg" },
-]
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setIsLoading(true)
+    setHasError(false)
+    try {
+      const response = await apiService.post({
+        // url: `${apiUrl}/${input}`,
+        url: apiUrl,
+        token: apiToken,
+        payload: { input },
+      })
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setResponse(JSON.stringify(response))
+    } catch (error) {
+      console.error(error)
+      setHasError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-const moreLinks = [
-  { text: "Join us on Discord", url: "https://gatsby.dev/discord" },
-  {
-    text: "Documentation",
-    url: "https://gatsbyjs.com/docs/",
-  },
-  {
-    text: "Starters",
-    url: "https://gatsbyjs.com/starters/",
-  },
-  {
-    text: "Showcase",
-    url: "https://gatsbyjs.com/showcase/",
-  },
-  {
-    text: "Contributing",
-    url: "https://www.gatsbyjs.com/contributing/",
-  },
-  { text: "Issues", url: "https://github.com/gatsbyjs/gatsby/issues" },
-]
+  const handleSaveSettings = e => {
+    e.preventDefault()
+    localStorage.setItem(StorageKeys.API_URL, apiUrl)
+    localStorage.setItem(StorageKeys.API_TOKEN, apiToken)
+    setApiUrl(apiUrl)
+    setApiToken(apiToken)
+    setCollapseOpened(false)
+  }
 
-const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
+  React.useEffect(() => {
+    const apiUrl = localStorage.getItem(StorageKeys.API_URL)
+    const apiToken = localStorage.getItem(StorageKeys.API_TOKEN)
+    if (apiToken) {
+      setApiToken(apiToken)
+    }
+    if (apiUrl) {
+      setApiUrl(apiUrl)
+    }
+  }, [])
 
-const IndexPage = () => (
-  <Layout>
-    <div className={styles.textCenter}>
-      <StaticImage
-        src="../images/example.png"
-        loading="eager"
-        width={64}
-        quality={95}
-        formats={["auto", "webp", "avif"]}
-        alt=""
-        style={{ marginBottom: `var(--space-3)` }}
-      />
-      <h1>
-        Welcome to <b>Gatsby!</b>
-      </h1>
-      <p className={styles.intro}>
-        <b>Example pages:</b>{" "}
-        {samplePageLinks.map((link, i) => (
-          <React.Fragment key={link.url}>
-            <Link to={link.url}>{link.text}</Link>
-            {i !== samplePageLinks.length - 1 && <> · </>}
-          </React.Fragment>
-        ))}
-        <br />
-        Edit <code>src/pages/index.js</code> to update this page.
-      </p>
-    </div>
-    <ul className={styles.list}>
-      {links.map(link => (
-        <li key={link.url} className={styles.listItem}>
-          <a
-            className={styles.listItemLink}
-            href={`${link.url}${utmParameters}`}
+  return (
+    <Container
+      size={520}
+      px="xs"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <Group position="center" mb="md" w="100%" justify="center">
+        <Title order={1}>SecPro</Title>
+      </Group>
+      <Group position="center" mb="md">
+        <Title order={2}>Ask something</Title>
+      </Group>
+      <Paper shadow="xs" p="md" radius={4} withBorder>
+        <form onSubmit={handleSubmit}>
+          <Group noWrap align="flex-end">
+            <TextInput
+              value={input}
+              onChange={e => setInput(e.currentTarget.value)}
+              placeholder="Type your question..."
+              radius={4}
+              size="md"
+              style={{ flex: 1 }}
+              data-autofocus
+            />
+            <Button
+              type="submit"
+              radius={4}
+              size="md"
+              color="indigo"
+              disabled={isLoading}
+              leftSection={
+                isLoading ? <Loader size={18} color="white" /> : null
+              }
+            >
+              Send
+            </Button>
+          </Group>
+          {!isLoading && hasError && (
+            <Box mt="lg" mb="lg">
+              <Text c="red">Sorry, something went wrong 😥</Text>
+            </Box>
+          )}
+          <Box mt="lg" style={{ minHeight: 80 }}>
+            <Paper
+              p="md"
+              radius={4}
+              withBorder
+              style={{ color: "#888", fontSize: 18 }}
+            >
+              {response}
+            </Paper>
+          </Box>
+        </form>
+      </Paper>
+
+      <Divider my="md" />
+      <Button
+        variant="subtle"
+        // leftIcon={<IconKey size={18} />}
+        onClick={() => setCollapseOpened(o => !o)}
+        mb="xs"
+        leftSection={
+          <IconKey size={18} color={apiToken && apiUrl ? "green" : "gray"} />
+        }
+      >
+        API Settings
+      </Button>
+      <Collapse in={collapseOpened}>
+        <Paper shadow="xs" p="md" radius={4} withBorder>
+          <TextInput
+            label="API URL"
+            placeholder="https://your-api.com/endpoint"
+            value={apiUrl}
+            onChange={e => setApiUrl(e.currentTarget.value)}
+            mb="sm"
+          />
+          <TextInput
+            label="Access token"
+            placeholder="Your token..."
+            value={apiToken}
+            onChange={e => setApiToken(e.currentTarget.value)}
+            type="password"
+          />
+          <Button
+            type="button"
+            radius={4}
+            size="md"
+            color="indigo"
+            mt="sm"
+            onClick={handleSaveSettings}
           >
-            {link.text} ↗
-          </a>
-          <p className={styles.listItemDescription}>{link.description}</p>
-        </li>
-      ))}
-    </ul>
-    {moreLinks.map((link, i) => (
-      <React.Fragment key={link.url}>
-        <a href={`${link.url}${utmParameters}`}>{link.text}</a>
-        {i !== moreLinks.length - 1 && <> · </>}
-      </React.Fragment>
-    ))}
-  </Layout>
-)
-
-/**
- * Head export to define metadata for the page
- *
- * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
- */
-export const Head = () => <Seo title="Home" />
+            Save
+          </Button>
+        </Paper>
+      </Collapse>
+    </Container>
+  )
+}
 
 export default IndexPage
+
+const apiService = {
+  post: async ({ url, token, payload }) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    return response.json()
+  },
+  get: async ({ url, token }) => {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    return response.json()
+  },
+}
