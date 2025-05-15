@@ -90,25 +90,47 @@ const IndexPage = () => {
 
   return (
     <Container
-      size={520}
-      px="xs"
+      px="lg"
       style={{
         minHeight: "100vh",
+        minWidth: "550px",
+        width: "60%",
+        maxWidth: "none",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+
+        // borderRadius: 12,
+        boxShadow: "0 2px 12px 0 rgba(0,0,0,0.03)",
       }}
     >
       <Group position="center" mb="md" w="100%" justify="center">
-        <Title order={1} style={{ fontSize: 40 }}>
+        <Title
+          order={1}
+          style={{
+            fontSize: 42,
+            color: "#f1f3f6",
+            textShadow: "0 12px 16px rgba(0,0,0,0.7), 0 1px 1px #000",
+          }}
+        >
           SecPro
         </Title>
       </Group>
-      {/* <Group position="center" mb="md">
-        <Title order={2}>Ask something</Title>
-      </Group> */}
-      <Paper shadow="xs" p="md" radius={4} withBorder>
-        <form onSubmit={handleSubmit}>
+      <Paper
+        shadow="xs"
+        p="md"
+        radius={4}
+        withBorder
+        style={{
+          background: "#23272f",
+          color: "#f1f3f6",
+          borderColor: "#343a40",
+        }}
+      >
+        <form
+          onSubmit={handleSubmit}
+          style={{ background: "transparent", color: "#f1f3f6" }}
+        >
           <Group noWrap align="flex-end">
             <Select
               label="Level of importance"
@@ -122,7 +144,10 @@ const IndexPage = () => {
                 value: i.toString(),
                 label: i.toString(),
               }))}
-              // data-autofocus
+              styles={{
+                label: { color: "#f1f3f6" },
+                input: { background: "#181c24", color: "#f1f3f6" },
+              }}
             />
             <Select
               label="External ID"
@@ -133,6 +158,10 @@ const IndexPage = () => {
               size="md"
               style={{ flex: 1 }}
               data={externalIdOptions}
+              styles={{
+                label: { color: "#f1f3f6" },
+                input: { background: "#181c24", color: "#f1f3f6" },
+              }}
             />
             <Button
               type="submit"
@@ -142,13 +171,16 @@ const IndexPage = () => {
               leftSection={
                 isLoading ? <Loader size={18} color="white" /> : null
               }
+              style={{ background: "#4f5b93", color: "#fff" }}
             >
               Send
             </Button>
           </Group>
           {!isLoading && hasError && (
             <Box mt="lg" mb="lg">
-              <Text c="red">Sorry, something went wrong 😥</Text>
+              <Text c="red" style={{ color: "#ff6b6b" }}>
+                Sorry, something went wrong 😥
+              </Text>
             </Box>
           )}
           <Box mt="lg" style={{ minHeight: 80 }}>
@@ -156,12 +188,22 @@ const IndexPage = () => {
               p="md"
               radius={4}
               withBorder
-              style={{ fontSize: 18, background: "#f4f6fb" }}
+              style={{
+                fontSize: 18,
+                background: "#181c24",
+                color: "#f1f3f6",
+                borderColor: "#343a40",
+              }}
             >
               {formatSummaryText(response.summary)}
             </Paper>
             {response.input_tokens ? (
-              <Text size="sm" style={{ color: "#888" }} align="right">
+              <Text
+                size="sm"
+                style={{ color: "#adb5bd" }}
+                align="right"
+                ml={"auto"}
+              >
                 {response.input_tokens} tokens
               </Text>
             ) : null}
@@ -169,23 +211,37 @@ const IndexPage = () => {
         </form>
       </Paper>
 
-      <Divider my="md" />
       <Button
         variant="subtle"
         onClick={() => setCollapseOpened(o => !o)}
         mb="xs"
         leftSection={<IconKey size={18} color={apiUrl ? "green" : "gray"} />}
+        color="#adb5bd"
       >
         API Settings
       </Button>
       <Collapse in={collapseOpened}>
-        <Paper shadow="xs" p="md" radius={4} withBorder>
+        <Paper
+          shadow="xs"
+          p="md"
+          radius={4}
+          withBorder
+          style={{
+            background: "#23272f",
+            color: "#f1f3f6",
+            borderColor: "#343a40",
+          }}
+        >
           <TextInput
             label="API URL"
             placeholder="https://your-api.com/endpoint"
             value={apiUrl}
             onChange={e => setApiUrl(e.currentTarget.value)}
             mb="sm"
+            styles={{
+              label: { color: "#f1f3f6" },
+              input: { background: "#181c24", color: "#f1f3f6" },
+            }}
           />
           <TextInput
             label="Access token"
@@ -193,6 +249,10 @@ const IndexPage = () => {
             value={apiToken}
             onChange={e => setApiToken(e.currentTarget.value)}
             type="password"
+            styles={{
+              label: { color: "#f1f3f6" },
+              input: { background: "#181c24", color: "#f1f3f6" },
+            }}
           />
           <Divider my="sm" />
           <Title order={5} mb="xs">
@@ -204,6 +264,10 @@ const IndexPage = () => {
               placeholder="Type a new external ID"
               value={newExternalId}
               onChange={e => setNewExternalId(e.currentTarget.value)}
+              styles={{
+                label: { color: "#f1f3f6" },
+                input: { background: "#181c24", color: "#f1f3f6" },
+              }}
             />
             <Button
               onClick={() => {
@@ -229,6 +293,7 @@ const IndexPage = () => {
                   opt => opt.value === newExternalId.trim()
                 )
               }
+              style={{ background: "#4f5b93", color: "#fff" }}
             >
               Add
             </Button>
@@ -240,6 +305,7 @@ const IndexPage = () => {
             color="indigo"
             mt="sm"
             onClick={handleSaveSettings}
+            style={{ background: "#4f5b93", color: "#fff" }}
           >
             Save
           </Button>
