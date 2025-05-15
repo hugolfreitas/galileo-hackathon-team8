@@ -11,6 +11,7 @@ import {
   Divider,
   Text,
   Loader,
+  Select,
 } from "@mantine/core"
 import { IconKey } from "@tabler/icons-react"
 
@@ -20,15 +21,17 @@ const StorageKeys = {
 }
 
 const IndexPage = () => {
-  const [input, setInput] = React.useState("")
-  const [response, setResponse] = React.useState(
-    "Ask something to check your LLM safety..."
-  )
+  const [response, setResponse] = React.useState({
+    summary: "",
+    article_count: 0,
+    input_tokens: 0,
+  })
   const [collapseOpened, setCollapseOpened] = React.useState(false)
   const [apiUrl, setApiUrl] = React.useState("")
   const [apiToken, setApiToken] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasError, setHasError] = React.useState(false)
+  const [input, setInput] = React.useState("0")
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -39,10 +42,16 @@ const IndexPage = () => {
         // url: `${apiUrl}/${input}`,
         url: apiUrl,
         token: apiToken,
-        payload: { input },
+        payload: { importance: Number(input) },
       })
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setResponse(JSON.stringify(response))
+      // const response = mockResponse
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      if (response.summary) {
+        setResponse(response)
+      } else {
+        setResponse({ summary: "No summary found in the response" })
+      }
     } catch (error) {
       console.error(error)
       setHasError(true)
@@ -85,26 +94,30 @@ const IndexPage = () => {
       <Group position="center" mb="md" w="100%" justify="center">
         <Title order={1}>SecPro</Title>
       </Group>
-      <Group position="center" mb="md">
+      {/* <Group position="center" mb="md">
         <Title order={2}>Ask something</Title>
-      </Group>
+      </Group> */}
       <Paper shadow="xs" p="md" radius={4} withBorder>
         <form onSubmit={handleSubmit}>
           <Group noWrap align="flex-end">
-            <TextInput
+            <Select
+              label="Level of importance"
               value={input}
-              onChange={e => setInput(e.currentTarget.value)}
-              placeholder="Type your question..."
+              onChange={setInput}
+              placeholder="Select level"
               radius={4}
               size="md"
               style={{ flex: 1 }}
-              data-autofocus
+              data={Array.from({ length: 11 }, (_, i) => ({
+                value: i.toString(),
+                label: i.toString(),
+              }))}
+              // data-autofocus
             />
             <Button
               type="submit"
               radius={4}
               size="md"
-              color="indigo"
               disabled={isLoading}
               leftSection={
                 isLoading ? <Loader size={18} color="white" /> : null
@@ -119,14 +132,14 @@ const IndexPage = () => {
             </Box>
           )}
           <Box mt="lg" style={{ minHeight: 80 }}>
-            <Paper
-              p="md"
-              radius={4}
-              withBorder
-              style={{ color: "#888", fontSize: 18 }}
-            >
-              {response}
+            <Paper p="md" radius={4} withBorder style={{ fontSize: 18 }}>
+              {response.summary}
             </Paper>
+            {response.input_tokens ? (
+              <Text size="sm" style={{ color: "#888" }} align="right">
+                {response.input_tokens} tokens
+              </Text>
+            ) : null}
           </Box>
         </form>
       </Paper>
@@ -137,9 +150,7 @@ const IndexPage = () => {
         // leftIcon={<IconKey size={18} />}
         onClick={() => setCollapseOpened(o => !o)}
         mb="xs"
-        leftSection={
-          <IconKey size={18} color={apiToken && apiUrl ? "green" : "gray"} />
-        }
+        leftSection={<IconKey size={18} color={apiUrl ? "green" : "gray"} />}
       >
         API Settings
       </Button>
@@ -197,4 +208,11 @@ const apiService = {
     })
     return response.json()
   },
+}
+
+const mockResponse = {
+  summary:
+    "This week in AI: The potential of artificial intelligence (AI) to revolutionize medicine and healthcare is being widely discussed, with the biggest impact expected to be reducing doctors' paperwork. In other news, OpenAI CEO Sam Altman, along with executives from Microsoft and Advanced Micro Devices, testified before Congress about the opportunities, risks, and needs of the AI industry. They emphasized the importance of investment in infrastructure and the need for streamlined policy for AI-related projects.",
+  article_count: 2,
+  input_tokens: 3012,
 }
