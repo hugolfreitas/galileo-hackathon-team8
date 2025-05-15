@@ -1,17 +1,11 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/
- */
-
-// You can delete this file if you're not using it
+// Import styles of packages that you've installed.
+// All packages except `@mantine/hooks` require styles imports
+import "@mantine/core/styles.css"
 
 import React from "react"
 import { MantineProvider } from "@mantine/core"
-import "@mantine/core/styles.css"
+import { theme } from "./src/components/theme"
 
-export const wrapRootElement = ({ element }) => (
-  <MantineProvider withGlobalStyles withNormalizeCSS>
-    {element}
-  </MantineProvider>
-)
+export const wrapPageElement = ({ element }) => {
+  return <MantineProvider theme={theme}>{element}</MantineProvider>
+}
