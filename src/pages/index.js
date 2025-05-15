@@ -32,19 +32,23 @@ const IndexPage = () => {
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasError, setHasError] = React.useState(false)
   const [input, setInput] = React.useState("0")
+  const [externalId, setExternalId] = React.useState("Galileo Galilei")
 
   const handleSubmit = async e => {
     e.preventDefault()
     setIsLoading(true)
     setHasError(false)
     try {
+      // if (1 === 1) {
+      //   setResponse(mockResponse)
+      //   return
+      // }
       const response = await apiService.post({
         // url: `${apiUrl}/${input}`,
         url: apiUrl,
         token: apiToken,
-        payload: { importance: Number(input) },
+        payload: { importance: Number(input), external_id: externalId },
       })
-      // const response = mockResponse
       await new Promise(resolve => setTimeout(resolve, 500))
 
       if (response.summary) {
@@ -114,6 +118,19 @@ const IndexPage = () => {
               }))}
               // data-autofocus
             />
+            <Select
+              label="External ID"
+              value={externalId}
+              onChange={setExternalId}
+              placeholder="Select external ID"
+              radius={4}
+              size="md"
+              style={{ flex: 1 }}
+              data={[
+                { value: "Galileo Galilei", label: "Galileo Galilei" },
+                { value: "Pope Urban VIII", label: "Pope Urban VIII" },
+              ]}
+            />
             <Button
               type="submit"
               radius={4}
@@ -133,7 +150,7 @@ const IndexPage = () => {
           )}
           <Box mt="lg" style={{ minHeight: 80 }}>
             <Paper p="md" radius={4} withBorder style={{ fontSize: 18 }}>
-              {response.summary}
+              {formatSummaryText(response.summary)}
             </Paper>
             {response.input_tokens ? (
               <Text size="sm" style={{ color: "#888" }} align="right">
@@ -187,6 +204,20 @@ const IndexPage = () => {
 }
 
 export default IndexPage
+
+const formatSummaryText = text => {
+  const parts = text.split("This week in AI")
+  return (
+    <>
+      {parts.map((part, index) => (
+        <React.Fragment key={index}>
+          {part}
+          {index < parts.length - 1 && <b>This week in AI</b>}
+        </React.Fragment>
+      ))}
+    </>
+  )
+}
 
 const apiService = {
   post: async ({ url, token, payload }) => {
