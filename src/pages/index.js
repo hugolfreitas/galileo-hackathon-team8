@@ -33,6 +33,11 @@ const IndexPage = () => {
   const [hasError, setHasError] = React.useState(false)
   const [input, setInput] = React.useState("0")
   const [externalId, setExternalId] = React.useState("Galileo Galilei")
+  const [externalIdOptions, setExternalIdOptions] = React.useState([
+    { value: "Galileo Galilei", label: "Galileo Galilei" },
+    { value: "Pope Urban VIII", label: "Pope Urban VIII" },
+  ])
+  const [newExternalId, setNewExternalId] = React.useState("")
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -126,10 +131,7 @@ const IndexPage = () => {
               radius={4}
               size="md"
               style={{ flex: 1 }}
-              data={[
-                { value: "Galileo Galilei", label: "Galileo Galilei" },
-                { value: "Pope Urban VIII", label: "Pope Urban VIII" },
-              ]}
+              data={externalIdOptions}
             />
             <Button
               type="submit"
@@ -164,7 +166,6 @@ const IndexPage = () => {
       <Divider my="md" />
       <Button
         variant="subtle"
-        // leftIcon={<IconKey size={18} />}
         onClick={() => setCollapseOpened(o => !o)}
         mb="xs"
         leftSection={<IconKey size={18} color={apiUrl ? "green" : "gray"} />}
@@ -187,6 +188,45 @@ const IndexPage = () => {
             onChange={e => setApiToken(e.currentTarget.value)}
             type="password"
           />
+          <Divider my="sm" />
+          <Title order={5} mb="xs">
+            Manage External IDs
+          </Title>
+          <Group align="flex-end" mb="sm">
+            <TextInput
+              label="Add new External ID"
+              placeholder="Type a new external ID"
+              value={newExternalId}
+              onChange={e => setNewExternalId(e.currentTarget.value)}
+            />
+            <Button
+              onClick={() => {
+                if (
+                  newExternalId.trim() &&
+                  !externalIdOptions.some(
+                    opt => opt.value === newExternalId.trim()
+                  )
+                ) {
+                  setExternalIdOptions(current => [
+                    ...current,
+                    {
+                      value: newExternalId.trim(),
+                      label: newExternalId.trim(),
+                    },
+                  ])
+                  setNewExternalId("")
+                }
+              }}
+              disabled={
+                !newExternalId.trim() ||
+                externalIdOptions.some(
+                  opt => opt.value === newExternalId.trim()
+                )
+              }
+            >
+              Add
+            </Button>
+          </Group>
           <Button
             type="button"
             radius={4}
