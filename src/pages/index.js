@@ -49,7 +49,6 @@ const IndexPage = () => {
       //   return
       // }
       const response = await apiService.post({
-        // url: `${apiUrl}/${input}`,
         url: apiUrl,
         token: apiToken,
         payload: { importance: Number(input), external_id: externalId },
@@ -101,7 +100,9 @@ const IndexPage = () => {
       }}
     >
       <Group position="center" mb="md" w="100%" justify="center">
-        <Title order={1}>SecPro</Title>
+        <Title order={1} style={{ fontSize: 40 }}>
+          SecPro
+        </Title>
       </Group>
       {/* <Group position="center" mb="md">
         <Title order={2}>Ask something</Title>
@@ -151,7 +152,12 @@ const IndexPage = () => {
             </Box>
           )}
           <Box mt="lg" style={{ minHeight: 80 }}>
-            <Paper p="md" radius={4} withBorder style={{ fontSize: 18 }}>
+            <Paper
+              p="md"
+              radius={4}
+              withBorder
+              style={{ fontSize: 18, background: "#f4f6fb" }}
+            >
               {formatSummaryText(response.summary)}
             </Paper>
             {response.input_tokens ? (
@@ -190,7 +196,7 @@ const IndexPage = () => {
           />
           <Divider my="sm" />
           <Title order={5} mb="xs">
-            Manage External IDs
+            <span style={{ fontSize: 20 }}>Manage External IDs</span>
           </Title>
           <Group align="flex-end" mb="sm">
             <TextInput

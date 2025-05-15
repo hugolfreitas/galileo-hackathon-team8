@@ -7,5 +7,9 @@ import { MantineProvider } from "@mantine/core"
 import { theme } from "./src/components/theme"
 
 export const wrapPageElement = ({ element }) => {
-  return <MantineProvider theme={theme}>{element}</MantineProvider>
+  return (
+    <MantineProvider theme={theme}>
+      <div style={{ background: "#f8f9fa" }}>{element}</div>
+    </MantineProvider>
+  )
 }
